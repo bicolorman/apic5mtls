@@ -1,0 +1,67 @@
+---
+swagger: "2.0"
+info:
+  x-ibm-name: "apimutual"
+  title: "apiMutual"
+  version: "1.0.0"
+schemes:
+- "https"
+host: "$(catalog.host)"
+basePath: "/apimutual"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+securityDefinitions:
+  clientIDHeader:
+    type: "apiKey"
+    description: "client ID Header"
+    in: "header"
+    name: "X-IBM-Client-Id"
+security:
+- clientIDHeader: []
+x-ibm-configuration:
+  testable: true
+  enforced: true
+  cors:
+    enabled: true
+  assembly:
+    execute:
+    - operation-switch:
+        title: "operation-switch"
+        case:
+        - operations:
+          - verb: "get"
+            path: "/mutual"
+          execute: []
+        - operations:
+          - verb: "post"
+            path: "/mutual"
+          execute: []
+        otherwise: []
+        version: "1.0.0"
+    - gatewayscript:
+        title: "gatewayscript"
+        version: "1.0.0"
+        source: "apim.setvariable('message.headers.Accept','application/vnd.gbm.v3+json');\r\
+          \napim.setvariable('message.headers.Content-Type','application/vnd.gbm.v3+json');\r\
+          \napim.setvariable('message.headers.X-API-Version', apim.getvariable('api.version'));\r\
+          \nlet responseBody = {\r\n        id: apim.getvariable('api.version'),\r\
+          \n        mensaje: \"HOLA API Lover\"\r\n    }\r\n\r\n    apim.setvariable('message.body',\
+          \ responseBody);\r\n    apim.output('application/json');"
+    catch: []
+  phase: "realized"
+  gateway: "datapower-gateway"
+  application-authentication:
+    certificate: true
+paths:
+  /mutual:
+    get:
+      responses:
+        200:
+          description: "200 OK"
+    post:
+      responses:
+        200:
+          description: "200 OK"
+tags: []
